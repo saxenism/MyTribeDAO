@@ -2,13 +2,15 @@ import { Button, Form, Input, Typography, InputNumber, Card } from "antd";
 import React, { useState, useEffect } from "react";
 import { useMoralis, useERC20Balances } from "react-moralis";
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 export default function QuickStart({ isServerInfo }) {
+  const shopFactoryContractAddress = "0xE0Da7E56C3d8B39899d26eDF90361AE7D675FeC1";
 
   const [isTokenDetailsProvided, setIsTokenDetailsProvided] = useState(false);
   const [isTokenDeployed, setIsTokenDeployed] = useState(false);
   const [userTokenBalance, setUserTokenBalance] = useState(0);
+  const [queryShopAddressButton, setQueryShopAddressButton] = useState(false);
 
   // This set will store the values we get when we hit the getTokenDetails() function
   // in our smart contract
@@ -53,7 +55,7 @@ export default function QuickStart({ isServerInfo }) {
 
   async function setTokenDetails(tokenName, tokenSymbol, tokenDecimals, tokenTotalSupply) {
     let contractOptionsSetShopTokenDetails = {
-      contractAddress:"0x3147C8F6d08482a3E34d3B8aD3728c30c51F935E",
+      contractAddress: shopFactoryContractAddress,
       functionName:"setShopTokenDetails",
       abi: [
         {
@@ -99,7 +101,7 @@ export default function QuickStart({ isServerInfo }) {
 
   async function deployToken() {
     let contractOptionsCreateShopTokens = {
-      contractAddress:"0x3147C8F6d08482a3E34d3B8aD3728c30c51F935E",
+      contractAddress: shopFactoryContractAddress,
       functionName:"createShopTokens",  
       abi: [
         {
@@ -119,9 +121,55 @@ export default function QuickStart({ isServerInfo }) {
     window.location.reload();
   }
 
+  async function queryUserStoreAddress() {
+    let contractOptionsGetShopAddress = {
+      contractAddress: shopFactoryContractAddress,
+      functionName: "getShopAddress",
+      abi: [
+        {
+          "inputs": [],
+          "name": "getShopAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ],  
+    }
+
+    const result = await Moralis.executeFunction(contractOptionsGetShopAddress);
+    console.log(result);
+    localStorage.setItem("shopContractAddress", result);
+
+    window.location.reload();
+  }
+
+  async function createUserStore() {
+    let contractOptionsCreateShop = {
+      contractAddress: shopFactoryContractAddress,
+      functionName: "createShop",
+      abi: [
+        {
+          "inputs": [],
+          "name": "createShop",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+    }
+
+    await Moralis.executeFunction(contractOptionsCreateShop);
+    setQueryShopAddressButton(true);
+  }
   async function fetchTokenDetails() {
     let contractOptionsGetShopTokenDetails = {
-      contractAddress:"0x3147C8F6d08482a3E34d3B8aD3728c30c51F935E",
+      contractAddress: shopFactoryContractAddress,
       functionName:"getShopTokenDetails",
       abi: [
         {
@@ -382,23 +430,42 @@ export default function QuickStart({ isServerInfo }) {
             <br />
             <Meta title = "Token Supply" description = {getDataFromLocalStorage("retrievedTokenTotalSupply")} />
             <br />
-            <Meta title = "Token Address" description = {getDataFromLocalStorage("tokenAddress")} />
+            <Meta title = "Token Address" description = {<Paragraph copyable>{getDataFromLocalStorage("tokenAddress")}</Paragraph>} />
             <br />
             {
-              ((userTokenBalance || getDataFromLocalStorage("userTokenBalance")) !== 0) ? 
+              (userTokenBalance || getDataFromLocalStorage("userTokenBalance")) ? 
               <>
-              <Meta title = "Your Balance" description = {userTokenBalance || getDataFromLocalStorage("userTokenBalance")} />
+              <Meta title = "Your Balance" description = {getDataFromLocalStorage("userTokenBalance") || userTokenBalance } />
               <br /> 
               </>
               :
               null
             }
-            <Meta title = "Check Polygonscan" description = {<p>View token on <a href={`https://mumbai.polygonscan.com/address/${getDataFromLocalStorage("tokenAddress")}`} >polygonscan</a></p>} />
+            <Meta title = "Check Token on Polygonscan" description = {<p>View token on <a href={`https://mumbai.polygonscan.com/address/${getDataFromLocalStorage("tokenAddress")}`} >polygonscan</a></p>} />
             <br/>
+            {
+              (getDataFromLocalStorage("shopContractAddress")) ? 
+              <>
+              <Meta title = "Your Store Address" description = {<Paragraph copyable>{getDataFromLocalStorage("shopContractAddress") }</Paragraph>} />
+              <br />
+              <Meta title = "Check Store on Polygonscan" description = {<p>View store on <a href={`https://mumbai.polygonscan.com/address/${getDataFromLocalStorage("shopContractAddress")}`} >polygonscan</a></p>} /> 
+              </>
+              :
+              null
+            }
           </Card>
           <br/>
           <br/>
           <Button size = "large" type = "primary" onClick={fetchUserTokenBalance} style={{display:"inline-flex"}}>Query Token Balance</Button>
+          <br/>
+          <br/>
+          {
+            (localStorage.getItem("shopContractAddress")) ?
+            null:
+            !queryShopAddressButton ?
+            <Button size = "large" type = "primary" onClick={createUserStore} style={{display:"inline-flex"}}>Create your store</Button> :
+            <Button size = "large" type = "primary" onClick={queryUserStoreAddress} style={{display:"inline-flex"}}>Query Store Address</Button> 
+          }
           <br/>
           <br/>
           <Button size = "large" type = "danger" onClick={changeTokenDetails} style={{display:"inline-flex"}}>Create New Token</Button>

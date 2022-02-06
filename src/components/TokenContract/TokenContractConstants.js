@@ -1,40 +1,15 @@
 const tokenFactoryABI = `[
 	{
 		"inputs": [],
-		"name": "createShopTokens",
+		"name": "createShop",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "potentialHodler",
-				"type": "address"
-			}
-		],
-		"name": "getBalanceAtSnapshotID",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
-		"name": "getSnapshotID",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
+		"name": "createShopTokens",
+		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -67,32 +42,13 @@ const tokenFactoryABI = `[
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "getShopAddress",
+		"outputs": [
 			{
 				"internalType": "address",
-				"name": "protocolFeeCollector",
+				"name": "",
 				"type": "address"
-			}
-		],
-		"name": "getBalanceOfRandomAddress",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getBalanceOfShopOwner",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -188,7 +144,85 @@ const tokenFactoryABI = `[
 	},
 	{
 		"inputs": [],
-		"name": "snapshotID",
+		"name": "tokenCreator",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+`;
+
+const tokenizedShopABI = `[
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "changePriceForItem",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "shopItemName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "shopItemDescription",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "shopItemImage",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemQuantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemID",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct TokenizedShop.ShopItem",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contractBalance",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -198,7 +232,317 @@ const tokenFactoryABI = `[
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "displayAllItems",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "shopItemName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "shopItemDescription",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "shopItemImage",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemQuantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemID",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct TokenizedShop.ShopItem[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "displayItemByID",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "shopItemName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "shopItemDescription",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "shopItemImage",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemQuantity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "shopItemID",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct TokenizedShop.ShopItem",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "image",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "enlistItem",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getDerivedPrice",
+		"outputs": [
+			{
+				"internalType": "int256",
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getShopOwner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "itemID",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "sellItem",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "gareeb",
+				"type": "address"
+			}
+		],
+		"name": "sendMatic",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "shopItems",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "shopItemName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "shopItemDescription",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "shopItemImage",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "shopItemPrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "shopItemQuantity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "shopItemID",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "shopItemsArray",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "shopItemName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "shopItemDescription",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "shopItemImage",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "shopItemPrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "shopItemQuantity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "shopItemID",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "shopOwner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
-]`;
+]
 
-export {tokenFactoryABI};
+`;
+
+export {tokenFactoryABI, tokenizedShopABI};
+

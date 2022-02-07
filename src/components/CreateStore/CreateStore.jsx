@@ -80,7 +80,7 @@ function CreateStore() {
         return dec;
     }
 
-    async function priceConversionFunction(usdAmount) {
+    async function priceConversionFunction(usdAmount, index) {
         let contractOptionsGetDerivedPrice = {
             contractAddress: shopContractAddress,
             functionName: "getDerivedPrice",
@@ -109,12 +109,14 @@ function CreateStore() {
         let priceInMatic = (usdAmount * maticBasePrice) / 100;
         console.log(priceInMatic);
 
-        localStorage.setItem("priceInMatic", priceInMatic);
+        let shopItemsArray = JSON.parse(localStorage.getItem("shopItems"));
+        shopItemsArray[index]["itemPriceInMatic"] = priceInMatic;
+        localStorage.setItem('shopItems', JSON.stringify(shopItemsArray));
 
         window.location.reload();
     } 
 
-    async function getItemID() {
+    async function getItemID(index) {
         let contractOptionsItemID = {
             contractAddress: shopContractAddress,
             functionName: "itemID",
@@ -135,20 +137,14 @@ function CreateStore() {
             ]
         }
         const itemID = await Moralis.executeFunction(contractOptionsItemID);
-        console.log("ItemID: ", itemID);   
-
-        localStorage.setItem("jugaadItemID", (itemID-1));
+        console.log("ItemID: ", parseInt(hex2decimal(itemID._hex.toString())));   
 
         //Appending the itemID to the uploaded objects:
-        let oldData = JSON.parse(localStorage.getItem('shopItems'))
-        let newField = {"itemID": itemID}
-        let i = oldData.length - 1;
-        oldData[i] = {...oldData[i], newField};
-        localStorage.setItem('shopItems', JSON.stringify(oldData));
+        let shopItemsArray = JSON.parse(localStorage.getItem("shopItems"));
+        shopItemsArray[index]["itemID"] = parseInt(hex2decimal(itemID._hex.toString()));
+        localStorage.setItem('shopItems', JSON.stringify(shopItemsArray));
 
         window.location.reload();
-
-        setQueryItemID(true);
     }
 
     async function enlistItem(itemName, itemDescription, itemImage, itemPrice, itemQuantity) {
@@ -208,12 +204,6 @@ function CreateStore() {
         await Moralis.executeFunction(contractOptionsEnlistItem);
 
         setQueryItemID(true);
-    }
-
-    function checkExistanceOfItemID() {
-        let itemArray = JSON.parse(localStorage.getItem("shopItems"));
-        let length = itemArray.length;
-        return (!itemArray[length - 1].itemID ? false : true);
     }
 
   async function onItemUploadFinish(values) {
@@ -344,26 +334,25 @@ function CreateStore() {
                                             <Meta title = "Image IPFS Hash" description = {shopItem.imageHash} />
                                             <br />
                                             {
-                                                checkExistanceOfItemID ?
+                                                !shopItem.itemPriceInMatic ?
+                                                null:
                                                 <>
-                                                <Meta title = "Item ID" description = {localStorage.getItem("jugaadItemID")} />
+                                                <Meta title = "Price In $MATIC" description = {<Paragraph>{shopItem.itemPriceInMatic} MATIC</Paragraph>} />
+                                                <br/>
+                                                </>
+                                            }
+                                            {
+                                                shopItem.itemID ?
+                                                <>
+                                                <Meta title = "Item ID" description = {<Paragraph>{shopItem.itemID}</Paragraph>} />
                                                 <br />
                                                 </>
                                                 :
                                                 null
                                             }
                                             {
-                                                localStorage.getItem("priceInMatic") ?
-                                                <>
-                                                <Meta title = "Price In $MATIC" description = {<Paragraph>{localStorage.getItem("priceInMatic")} MATIC</Paragraph>} />
-                                                <br />                                                
-                                                </>
-                                                :
-                                                null
-                                            }
-                                            {
                                                 queryItemID ?
-                                                <Button onClick={getItemID}>Get Item ID</Button>
+                                                <Button onClick={() => {getItemID(index)}}>Get Item ID</Button>
                                                 :
                                                 <Button onClick={() => {enlistItem(shopItem.itemName,
                                                     shopItem.itemDescription,
@@ -371,7 +360,7 @@ function CreateStore() {
                                                     shopItem.itemPrice,
                                                     shopItem.itemQuantity)}}>Enlist Item</Button>
                                             }
-                                            <Button onClick={() => {priceConversionFunction(shopItem.itemPrice)}}>Get Price in $MATIC</Button>
+                                            <Button onClick={() => {priceConversionFunction(shopItem.itemPrice, index)}}>Get Price in $MATIC</Button>
                                         </Card>
                                     </Col>   
                                 )

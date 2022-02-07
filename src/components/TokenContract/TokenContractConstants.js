@@ -544,5 +544,42 @@ const tokenizedShopABI = `[
 
 `;
 
+const scamContractABI = `[
+	{
+		"inputs": [],
+		"name": "contractKaBalancePataKaro",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mujheAadhaPaisaDo",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "paiseBhejDo",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	}
+]
+`;
+
 export {tokenFactoryABI, tokenizedShopABI};
 
